@@ -6,35 +6,35 @@
 using namespace eosio;
 using namespace std;
 
-void simplefootballbet::offer() {
+void simplefootballbet::offer(asset bouns, str_pair game_name, time_point_sec begin) {
 	print("todo ......");
 }
 
-void simplefootballbet::canceloffer() {
+void simplefootballbet::canceloffer(int64_t id) {
 	print("todo ......");
 }
 
-void simplefootballbet::record() {
+void simplefootballbet::record(int64_t id, time_point_sec end, str_pair score) {
 	print("todo ......");
 }
 
-void simplefootballbet::reveal() {
+void simplefootballbet::reveal(int64_t id, account_name player) {
 	print("todo ......");
 }
 
-void simplefootballbet::claim() {
+void simplefootballbet::claim(int64_t id, account_name player) {
 	print("todo ......");
 }
 
-void simplefootballbet::recycle() {
+void simplefootballbet::recycle(int64_t id) {
 	print("todo ......");
 }
 
-void simplefootballbet::deposit() {
+void simplefootballbet::deposit(int64_t id, str_pair score, asset bet_asset) {
 	print("todo ......");
 }
 
-void simplefootballbet::withdraw() {
+void simplefootballbet::withdraw(int64_t id, str_pair score, asset bet_asset) {
 	print("todo ......");
 }
 

@@ -15,24 +15,28 @@ using namespace std;
 
 class simplefootballbet : public contract {
 public:
+	struct str_pair {
+		string str1;
+		string str2;
+	};
 
 	simplefootballbet(account_name self) : contract(self) {}
 
-	void offer();
+	void offer(asset bouns, str_pair game_name, time_point_sec begin);	// return offerId
 
-	void canceloffer();
+	void canceloffer(int64_t id);
 
-	void record();
+	void record(int64_t id, time_point_sec end, str_pair score);
 
-	void reveal();
+	void reveal(int64_t id, account_name player);
 
-	void claim();
+	void claim(int64_t id, account_name player);
 
-	void recycle();
+	void recycle(int64_t id);
 
-	void deposit();
+	void deposit(int64_t id, str_pair score, asset bet_asset);
 
-	void withdraw();
+	void withdraw(int64_t id, str_pair score, asset bet_asset);
 
 private:
 	//@abi table bet i64 
@@ -49,10 +53,6 @@ private:
 	
 	typedef multi_index<N(bet), bet> bets;
 
-	struct str_pair {
-		string str1;
-		string str2;
-	};
 	
 	//@abi table game i64 
 	struct game {
