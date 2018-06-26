@@ -20,13 +20,18 @@ public:
 		string str2;
 	};
 
+	struct int_pair {
+		int64_t i1;
+		int64_t i2;
+	};
+
 	simplefootballbet(account_name self) : contract(self) {}
 
-	void offer(asset bouns, str_pair game_name, time_point_sec begin);	// return offerId
+	void offer(account_name offer, asset bouns, str_pair game_name, time_point_sec begin);	// return offerId
 
 	void canceloffer(int64_t id);
 
-	void record(int64_t id, time_point_sec end, str_pair score);
+	void record(int64_t id, time_point_sec end, int_pair score);
 
 	void reveal(int64_t id, account_name player);
 
@@ -34,21 +39,21 @@ public:
 
 	void recycle(int64_t id);
 
-	void deposit(int64_t id, str_pair score, asset bet_asset);
+	void deposit(int64_t id, account_name from, int_pair score, asset bet_asset);
 
-	void withdraw(int64_t id, str_pair score, asset bet_asset);
+	void withdraw(int64_t id, int_pair score, asset bet_asset);
 
 private:
 	//@abi table bet i64 
 	struct bet {
-		int64_t             id;
-		account_name        owner;
-		asset               bouns_pool;
-		int64_t             game_id;
+		uint64_t             id;
+		account_name         offer;
+		asset                bouns_pool;
+		uint64_t             game_id;
 		
 		auto primary_key()const { return id; }
 
-		EOSLIB_SERIALIZE(bet, (id)(owner)(bouns_pool)(game_id))
+		EOSLIB_SERIALIZE(bet, (id)(offer)(bouns_pool)(game_id))
 	};
 	
 	typedef multi_index<N(bet), bet> bets;
@@ -56,11 +61,11 @@ private:
 	
 	//@abi table game i64 
 	struct game {
-		int64_t               id;
+		uint64_t               id;
 		str_pair              name;
 		time_point_sec        begin;
 		time_point_sec        end;
-		str_pair              score;
+		int_pair              score;
 		
 		auto primary_key()const { return id; }
 
@@ -69,13 +74,13 @@ private:
 	
 	typedef multi_index<N(game), game> games;
 	
-	typedef vector<str_pair> vec_str_pair;
+	typedef vector<int_pair> vec_int_pair;
 	typedef vector<asset> vec_asset;
 	//@abi table player i64 
 	struct player {
 		account_name          account;
 		vec_asset             bet_asset;
-		vec_str_pair          guess_score;
+		vec_int_pair          guess_score;
 		
 		auto primary_key()const { return account; }
 
@@ -83,5 +88,7 @@ private:
 	};
 	
 	typedef multi_index<N(player), player> players;
+
+	static int find(vec_int_pair & scores, int_pair score);
 };
 
