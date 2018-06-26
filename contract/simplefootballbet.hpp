@@ -41,7 +41,7 @@ public:
 
 	void deposit(int64_t id, account_name from, int_pair score, asset bet_asset);
 
-	void withdraw(int64_t id, int_pair score, asset bet_asset);
+	void withdraw(int64_t id, account_name to, int_pair score, asset bet_asset);
 
 private:
 	//@abi table bet i64 

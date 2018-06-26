@@ -122,8 +122,6 @@ void simplefootballbet::recycle(int64_t id) {
 }
 
 void simplefootballbet::deposit(int64_t id, account_name from, int_pair score, asset bet_asset) {
-	print("todo ......");
-
 	bets bettable(_self, _self);
 	games gametable(_self, _self);
 	players playertable(_self, id);
@@ -133,10 +131,12 @@ void simplefootballbet::deposit(int64_t id, account_name from, int_pair score, a
 	eosio_assert(bet_itr != bettable.end(), "unknown id");
 	auto game_itr = gametable.find(bet_itr->game_id);
 	eosio_assert(game_itr != gametable.end(), "unknown game id");
-	
+
+	eosio_assert(game_itr->begin >= time_point_sec(now() + 3600), "can't deposit in current time");
 	eosio_assert(score.i1 >= 0  && score.i2 >= 0, "invaild score");
 	eosio_assert(bet_asset.is_valid(), "invalid asset");
     eosio_assert(bet_asset.amount > 0, "must deposit positive asset");
+	eosio_assert(bet_asset.symbol == bet_itr->bouns_pool.symbol, "invalid asset symbol");
 
 	auto player_itr = playertable.find(from);
 	if (player_itr == playertable.end()) {
@@ -164,8 +164,44 @@ void simplefootballbet::deposit(int64_t id, account_name from, int_pair score, a
 	).send();
 }
 
-void simplefootballbet::withdraw(int64_t id, int_pair score, asset bet_asset) {
-	print("todo ......");
+void simplefootballbet::withdraw(int64_t id, account_name to, int_pair score, asset bet_asset) {
+	require_auth(to);
+
+	bets bettable(_self, _self);
+	games gametable(_self, _self);
+	players playertable(_self, id);
+
+	auto bet_itr = bettable.find(id);
+	eosio_assert(bet_itr != bettable.end(), "unknown id");
+	auto game_itr = gametable.find(bet_itr->game_id);
+	eosio_assert(game_itr != gametable.end(), "unknown game id");
+
+	eosio_assert(game_itr->begin >= time_point_sec(now() + 3600), "can't deposit in current time");
+	eosio_assert(score.i1 >= 0  && score.i2 >= 0, "invaild score");
+	eosio_assert(bet_asset.is_valid(), "invalid asset");
+    eosio_assert(bet_asset.amount > 0, "must deposit positive asset");
+	eosio_assert(bet_asset.symbol == bet_itr->bouns_pool.symbol, "invalid asset symbol");
+
+	auto player_itr = playertable.find(to);
+	if (player_itr == playertable.end()) {
+		eosio_assert(false, "unknown account");
+	} else {
+		playertable.modify(player_itr, 0, [&]( auto& player ) {
+			auto idx = find(player.guess_score, score);
+			if (idx >= player.guess_score.size()) {
+				eosio_assert(false, "unknown guess_score");
+			} else {
+				eosio_assert(player.bet_asset[idx] > bet_asset, "insufficient asset");
+				player.bet_asset[idx] -= bet_asset;
+			}
+		});
+	}
+
+	action(
+		permission_level{_self, N(active)},
+		N(eosio.token), N(transfer),
+		std::make_tuple(_self, to, bet_asset, std::string(""))
+	).send();
 }
 
 int simplefootballbet::find(vec_int_pair& scores, int_pair score)  {
