@@ -153,8 +153,10 @@ void simplefootballbet::claim(int64_t id, account_name player) {
 		N(eosio.token), N(transfer),
 		std::make_tuple(_self, player, reward, std::string(""))
 	).send();
-	
-	print("todo ......");
+		
+	print("transfer ");
+	print(reward);
+	print(" reward to player");
 }
 
 void simplefootballbet::recycle(int64_t id) {
