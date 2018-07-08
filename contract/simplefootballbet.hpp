@@ -90,5 +90,6 @@ private:
 	typedef multi_index<N(player), player> players;
 
 	static int find(vec_int_pair & scores, int_pair score);
+	static int find(const vec_int_pair & scores, int_pair score);
 };
 
